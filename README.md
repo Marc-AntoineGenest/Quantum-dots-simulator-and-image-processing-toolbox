@@ -7,7 +7,7 @@ Here is an implementation of a one dimensional quantum dots simulator and images
 - MathWorks Image Processing Toolbox (https://www.mathworks.com/products/image.html)
 
 ## Citation
-If you use this code for your research, please my thesis.
+If you use this code for your research, please cite my thesis.
 ```
 @mastersthesis{QD_simulation_image_processing,
   author       = {Marc-Antoine Genest}, 
