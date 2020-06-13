@@ -8,6 +8,7 @@ Here is an implementation of a one dimensional quantum dots simulator and images
 
 ## Citation
 If you use this code for your research, please my thesis.
+```
 @mastersthesis{QD_simulation_image_processing,
   author       = {Marc-Antoine Genest}, 
   title        = {Implémentation d'une méthode d'identification de l'occupation électronique d'une boîte quantique grâce à des techniques d'apprentissage profond},
@@ -15,6 +16,7 @@ If you use this code for your research, please my thesis.
   year         = 2020,
   month        = 1,
 }
+```
 
 ## Help
 - simu_main.m : manually editate this file to simulate a new device and create different image process. Most functions used by this code are located in \simulation_toolbox folder.
