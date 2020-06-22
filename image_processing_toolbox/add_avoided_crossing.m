@@ -4,12 +4,12 @@ function occ_modif = add_avoided_crossing(occ, nVgy, angle, e_n, n_sommet,...
     int_min, int_max, int_length, integral_tab)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Anti-croisement
-% Paramètres pour l'anti-croisement
-% - nVgy     : hauteur du début du défaut sur l'axe y
-% - angle    : angle de la ligne créée par le défaut
-% - e_n      : pourcentage de l'énergie d'addition déterminant les limites de
+% ParamÃ¨tres pour l'anti-croisement
+% - nVgy     : hauteur du dÃ©but du dÃ©faut sur l'axe y
+% - angle    : angle de la ligne crÃ©Ã©e par le dÃ©faut
+% - e_n      : pourcentage de l'Ã©nergie d'addition dÃ©terminant les limites de
 %              l'hyperbole
-% - n_sommet : distance entre les sommets des hyperboles face-à-face, en
+% - n_sommet : distance entre les sommets des hyperboles face-Ã -face, en
 %              pourcentage de la distance des limites
 % 
 % nVgy = 0.6;
@@ -18,8 +18,8 @@ function occ_modif = add_avoided_crossing(occ, nVgy, angle, e_n, n_sommet,...
 % n_sommet = 0.4;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Estimation de la taille de la "patch" à coller et calcul du plus grand
-% diagramme de stabilité pour assurer toutes les transformations
+% Estimation de la taille de la "patch" Ã  coller et calcul du plus grand
+% diagramme de stabilitÃ© pour assurer toutes les transformations
 n_pixel = mean(diff(find(occ(1,:))));
 dv1 = mean(diff(V_sweep1));
 dv2 = mean(diff(V_sweep2));
@@ -31,11 +31,11 @@ occupation_2 = calculate_occupation('normal', 1,...
     int_min, int_max, int_length, integral_tab);
 occupation_ligne_2 = derive_occupation(occupation_2);
 
-% Ajouter une ligne de défaut
-% - [i0, j0]   : pixel de départ pour la ligne de défaut
-% - [i, j]     : à la fin, pixel de fin pour la ligne de défaut
+% Ajouter une ligne de dÃ©faut
+% - [i0, j0]   : pixel de dÃ©part pour la ligne de dÃ©faut
+% - [i, j]     : Ã  la fin, pixel de fin pour la ligne de dÃ©faut
 % - dxy, dxy0  : calcul de l'angle de la ligne
-% - occ_defect : diagramme de stabilité du défaut
+% - occ_defect : diagramme de stabilitÃ© du dÃ©faut
 i0 = round(size(occupation_ligne_2, 1)*nVgy, 0);
 i = i0;
 j0 = 1;
@@ -44,7 +44,7 @@ dxy0 = abs(1/tand(angle));
 dxy = dxy0 - 1;
 occ_defect = zeros(size(occupation_ligne_2));
 while i <= size(occupation_ligne_2, 1) && i > 0 && j <= size(occupation_ligne_2, 2)
-    occ_defect(1:i,j) = 1;
+    occ_defect(i,j) = 1;
     if dxy > 0
         j = round(j + 1, 0);
         dxy = dxy - 1;
@@ -64,8 +64,8 @@ while i <= size(occupation_ligne_2, 1) && i > 0 && j <= size(occupation_ligne_2,
 end
 
 % Trouver les points de rencontre
-% - nb_ilots       : nombre de lignes croisées par la ligne de défaut
-% - [idx_i, idx_j] : indice des premiers pixels de croisement du défaut
+% - nb_ilots       : nombre de lignes croisÃ©es par la ligne de dÃ©faut
+% - [idx_i, idx_j] : indice des premiers pixels de croisement du dÃ©faut
 nb_ilots = occupation_2(i,j) - occupation_2(i0,j0);
 [idx_i, idx_j] = find((occ_defect + occupation_ligne_2)==2);
 m = -1/((idx_i(end) - idx_i(1)) / (idx_j(end) - idx_j(1)));
@@ -87,7 +87,7 @@ occ_modif = occupation_ligne_2 + occ_defect;
 for ii = 1:length(idx_i)
     % Trouver les directions des transitions
     % - idx_cercle : indice des croisements du cercle et des lignes
-    % - dir_cercle : directions normalisées des 4 segments de droite
+    % - dir_cercle : directions normalisÃ©es des 4 segments de droite
     idx_cercle = [];
     for theta = linspace(-pi*2, 3*pi/4, round(pi*n_pixel, 0))
         for r = n_pixel/3:n_pixel/3+1
@@ -107,9 +107,9 @@ for ii = 1:length(idx_i)
         sqrt((idx_cercle(:,1)-idx_i(ii)).^2 + (idx_cercle(:,2)-idx_j(ii)).^2);
 
     % Trouver la position des limites de l'anticroisement
-    % - d_ligne    : longueur du segment à remplacer
-    % - idx_approx : estimation des pixels où rattacher l'hyperbole
-    % - idx_lim    : indices des pixels où rattacher l'hyperbole
+    % - d_ligne    : longueur du segment Ã  remplacer
+    % - idx_approx : estimation des pixels oÃ¹ rattacher l'hyperbole
+    % - idx_lim    : indices des pixels oÃ¹ rattacher l'hyperbole
     d_ligne = sqrt((abs(mean(diff(idx_i)))*e_n)^2 + ...
         (abs(mean(diff(idx_j)))*e_n)^2);
     idx_approx = d_ligne*dir_cercle + [idx_i(ii), idx_j(ii)];
@@ -118,11 +118,11 @@ for ii = 1:length(idx_i)
         (col' - idx_approx(:,2)).^2)), [], 2);
     idx_lim = [row(idx_p), col(idx_p)];
 
-    % Séparer les indices en triangles à être modifiés
-    % - idx_defect : indices des pixels limites sur la ligne de défaut
+    % SÃ©parer les indices en triangles Ã  Ãªtre modifiÃ©s
+    % - idx_defect : indices des pixels limites sur la ligne de dÃ©faut
     % - idx_trans  : indices des pixels limites sur la ligne de transition
-    % - idx_t1     : indices des pixels du premier triangle (supérieur)
-    % - idx_t2     : indices des pixels du deuxième triangle (inférieur)
+    % - idx_t1     : indices des pixels du premier triangle (supÃ©rieur)
+    % - idx_t2     : indices des pixels du deuxiÃ¨me triangle (infÃ©rieur)
     [row, col] = find(occ_defect==1);
     idx_defect = idx_lim(ismember(idx_lim, [row, col], 'rows'),:);
     if idx_defect(1,1) > idx_defect(2,1)
@@ -141,7 +141,7 @@ for ii = 1:length(idx_i)
     % - angle   : angle de la droite liant les sommets de l'hyperbole
     % - dx_s    : distance en x entre le croisement et le sommet des hyperboles
     % - dy_s    : distanc en y entre le croisement et le somment des hyperboles
-    % - A, B, P, V1, V2, Ai, Bi : paramètres pour tracer l'hyperbole
+    % - A, B, P, V1, V2, Ai, Bi : paramÃ¨tres pour tracer l'hyperbole
     d = mean(sqrt(sum((idx_t1 - idx_t2).^2, 2)))*n_sommet/2;
     diff_t = abs(diff([idx_t1, idx_t2]));
     angle_norm = mean([atand(diff_t(2)/diff_t(1)), atand(diff_t(4)/diff_t(3))]);
@@ -183,7 +183,7 @@ for ii = 1:length(idx_i)
         end
     end
 
-    % Remplacer le rectangle (équations paramétriques) de l'anti-croisement
+    % Remplacer le rectangle (Ã©quations paramÃ©triques) de l'anti-croisement
     segments = [[idx_t2(2,:); idx_t1(2,:)],...
         flipud(idx_t1),...
         [idx_t2(1,:); idx_t1(1,:)],...
@@ -192,8 +192,8 @@ for ii = 1:length(idx_i)
     pentes = dydx(1,:)./dydx(2,:);
     P = reshape(segments(1,:),2,4);
     ordonnees = P(1,:) - pentes.*P(2,:);
-    for i = 1:size(occ_test,1)
-        for j = 1:size(occ_test,2)
+    for i = 1:size(occ_modif,1)
+        for j = 1:size(occ_modif,2)
             if i < min(pentes(1:2)*j+ordonnees(1:2)) && i > max(pentes(3:4)*j+ordonnees(3:4))
                 occ_modif(i,j) = occ_antic(i,j);
             end
