@@ -9,7 +9,7 @@ function occupation = calculate_occupation(algo, waitbar_bool,...
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if waitbar_bool
-    f = waitbar(0,'Calcul de l''occupation...');
+    f = waitbar(0,'Occupation calculation...');
 end
 occupation = NaN(length(V_sweep1), length(V_sweep2));
 
@@ -29,6 +29,12 @@ if strcmp(algo, 'fast')
 %         V_gate2 = gatePotential(V_sweep2(j_contour(i)), sweep_gate(2).x0, sweep_gate(2).l,...
 %             sweep_gate(2).r0, sweep_gate(2).h, x, sweep_gate(2).cond_inf);
 %         V = V_constant + V_gate1 + V_gate2;
+        if i_contour(i) < 0
+            i_contour(i) = 1;
+        end
+        if j_contour(i) < 0
+            j_contour(i) = 1;
+        end
         V = V_oxe + calculate_potential(gates, n1, V_sweep1(i_contour(i)), n2, V_sweep2(j_contour(i)), CC);
         
         % Calcul auto-consitent de la densité électronique

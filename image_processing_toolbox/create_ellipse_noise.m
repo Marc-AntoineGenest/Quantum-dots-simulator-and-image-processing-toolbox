@@ -62,23 +62,32 @@ for i = 1:size(idx_off,1)
     if idx_start_i < 0
         idx_start_i = 1;
     end
-    if idx_start_i+size(pmap,1)-1 > size(occ_sens,1)
+    if idx_start_i+size(pmap,1)-1 > size(occ_sens,1) && idx_start_i+size(occ_sens,1)-1 <= size(pmap,1)
         pmap = pmap(1:idx_start_i+size(occ_sens,1)-1,:);
     end
-    if idx_start_j < 0
+    if idx_start_j < 0 || idx_start_j == Inf
         idx_start_j = 1;
     end
-    if idx_start_j+size(pmap,2)-1 > size(occ_sens,2)
+    if idx_start_j+size(pmap,2)-1 > size(occ_sens,2) && idx_start_j+size(pmap,2)-1 <= size(pmap,2)
         pmap = pmap(:,1:idx_start_j+size(occ_sens,2)-1);
     end
     
+    if idx_start_j == 0
+        idx_start_j = 1;
+    end
+    if idx_start_i == 0
+        idx_start_i = 1;
+    end
     occ_sens(idx_start_i:idx_start_i+size(pmap,1)-1,...
-        idx_start_j:idx_start_j+size(pmap,2)-1) = pmap;
+    idx_start_j:idx_start_j+size(pmap,2)-1) = pmap;
 
     % Création d'une carte de point aléatoire
     rmap = rand(size(occ));
 
     % Effacer le signal et ajouter du bruit
+    if size(occ_sens, 1) > size(occ_modif, 1) || size(occ_sens, 2) > size(occ_modif, 2)
+        occ_sens = occ_sens(1:size(occ_modif, 1), 1:size(occ_modif,2));
+    end
     occ_modif = rmap/eraser>occ_sens & occ_modif;
     occ_modif(rmap/noise<occ_sens & occ_sens>0.01) = 1;
 end

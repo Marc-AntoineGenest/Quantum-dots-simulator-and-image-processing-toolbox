@@ -15,7 +15,7 @@ function occ_modif = full_translate(occ, angle, nVgy, nVgx,...
 %% Modification du diagramme
 % Calcul des offset de pixel pour la translation
 pixel_offx = round(length(V_sweep2)*nVgx);
-dv = V_sweep2(abs(pixel_offx)+1) - V_sweep2(1);
+dv = V_sweep2(min(abs(pixel_offx)+1, length(V_sweep2))) - V_sweep2(1);
 pixel_offy1 = floor(length(V_sweep1)*nVgy);
 pixel_offy2 = pixel_offy1 + round(abs(tand(angle)*length(V_sweep2)),0)*angle/abs(angle);
 if pixel_offy2 < 0
@@ -36,6 +36,8 @@ for i = startx:-1:abs(pixel_offx)+1
         dx_y = dx_y + dx_y0;
         pixel_offy2 = pixel_offy2 - angle/abs(angle);
     end
+    pixel_offy2 = min(pixel_offy2, size(occ_modif, 1) - 1);
+    pixel_offy2 = max(pixel_offy2, 1);
     occ_modif(1:pixel_offy2, i) = occ_modif(1:pixel_offy2, i-pixel_offx);
     dx_y = dx_y - 1;
 end
@@ -43,8 +45,8 @@ end
 % Calcul de la partie qu'il manque
 occ_ligne = calculate_occupation('fast', 0,...
     gates, CC, n1, V_sweep1(1:pixel_offy2+1),...
-    n2, V_sweep2(1:pixel_offx+1)-dv,...
+    n2, V_sweep2(1:min(pixel_offx+1, length(V_sweep2)))-dv,...
     V_oxe, integrand_x, eps_0, x, dx,...
     int_min, int_max, int_length, integral_tab);
 occ_ligne = derive_occupation(occ_ligne);
-occ_modif(1:pixel_offy2, 1:pixel_offx) = occ_ligne;
+occ_modif(1:pixel_offy2, 1:pixel_offx) = occ_ligne(1:pixel_offy2, 1:pixel_offx);

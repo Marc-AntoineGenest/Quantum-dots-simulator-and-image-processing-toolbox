@@ -17,7 +17,7 @@ if exist(file_path, 'file') ~= 2
         'Voulez-vous le créer et poursuivre, ou annuler la simulation?'},...
         'Warning', 'Poursuivre', 'Annuler', 'Poursuivre');
     if strcmp(answer, 'Poursuivre')
-        write_integral(g0, k, T, Ef, file_path)
+        write_integral_tab(g0, k, T, Ef, file_path)
     else
         return
     end

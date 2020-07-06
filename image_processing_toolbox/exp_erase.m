@@ -27,8 +27,8 @@ if coefy < 1
 end
 
 % Création du filtre exponentiel selon les coeficients de couplages donnés
-filtre1 = coefx*ones(size(occ)) .* (logspace(0, 1, size(occ, 1)));
-filtre2 = transpose(coefy*ones(size(occ)) .* (logspace(0, 1, size(occ, 1))));
+filtre1 = coefx*ones(size(occ)) .* (logspace(0, 1, size(occ, 1))');
+filtre2 = coefy*ones(size(occ)) .* (logspace(0, 1, size(occ, 1))');
 
 % Map de bruit pour ne pas avoir une coupur sharp
 rand_map = rand(size(occ));

@@ -44,40 +44,82 @@
 %   - d = {1, 5}
 
 % Déclaration de l'emplacement de fichiers
-load_path = ''; % INSERT SIMULATIONS PATHS (.m file)
-save_path = ''; % INSERT PATH WHERE .m FILES WILL BE SAVED
-images_path = ''; % INSERT PATH WHERE IMAGES WILL BE SAVED
+load_path = 'C:\Users\sCzischek\Documents\Postdoc_Waterloo\Quantum Dots\Quantum-dots-simulator-and-image-processing-toolbox\training_data'; % INSERT SIMULATIONS PATHS (.m file)
+save_path = 'C:\Users\sCzischek\Documents\Postdoc_Waterloo\Quantum Dots\Quantum-dots-simulator-and-image-processing-toolbox\training_data\'; % INSERT PATH WHERE .m FILES WILL BE SAVED
+images_path = 'C:\Users\sCzischek\Documents\Postdoc_Waterloo\Quantum Dots\Quantum-dots-simulator-and-image-processing-toolbox\training_data\'; % INSERT PATH WHERE IMAGES WILL BE SAVED
 
 % Modification des diagrammes de stabilité
 files = dir([load_path, '\*.mat']);
 for f = 1:length(files)
     % Lecture de la simulation
-    file_name = [load_path, '\', files(f).name];
-    simulation = load(file_name);
-    simulation = simulation.simulation;
+    %file_name = [load_path, '\', files(f).name];
+    %simulation = load(file_name);
+    %simulation = simulation.simulation;
     
     % Faire six transformations par diagramme simulé
-    for t = 1:6
+    for t = 1:5
         % Lecture de la simulation à transformer
         file_name = [load_path, '\', files(f).name];
         simulation = load(file_name);
         simulation = simulation.simulation;
         
         % Détermination des modification à apporter
-        switch t
-            case 1
-                names = {'taux tunnel signal'; 'perte sensibilité'; 'effet Major'};
-            case 2
-                names = {'taux tunnel signal'; 'perte sensibilité'; 'taux tunnel efface'};
-            case 3
-                names = {'taux tunnel signal'; 'taux tunnel efface'; 'effet Major'};
-            case 4
-                names = {'taux tunnel signal'; 'perte sensibilité'; 'effet Major'; 'taux tunnel efface'};
-            case 5
-                names = {'taux tunnel signal'; 'taux tunnel mesure'};
-            case 6
-                names = {'taux tunnel signal'; 'taux tunnel mesure'; 'taux tunnel efface'};
-        end
+        %switch t
+        %    case 1
+        %        names = {'taux tunnel signal'; 'perte sensibilité'; 'effet Major'};
+        %    case 2
+        %        names = {'taux tunnel signal'; 'perte sensibilité'; 'taux tunnel efface'};
+        %    case 3
+        %        names = {'taux tunnel signal'; 'taux tunnel efface'; 'effet Major'};
+        %    case 4
+        %        names = {'taux tunnel signal'; 'perte sensibilité'; 'effet Major'; 'taux tunnel efface'};
+        %    case 5
+        %        names = {'taux tunnel signal'; 'taux tunnel mesure'};
+        %    case 6
+        %        names = {'taux tunnel signal'; 'taux tunnel mesure'; 'taux tunnel efface'};
+        %end
+        
+        s = randi(4);
+        trans_num = randperm(4);
+        trafos = {'perte sensibilité', 'effet Major', 'taux tunnel efface', 'taux tunnel mesure'};%, 'anticroisement 2', 'anticroisement 1', 'effet piège', 'effet capacitif'};
+        
+        if s == 1
+            names = {'taux tunnel signal', trafos{trans_num(1)}};
+        elseif s == 2
+            names = {'taux tunnel signal', trafos{trans_num(1)}, trafos{trans_num(2)}};
+        elseif s == 3
+            names = {'taux tunnel signal', trafos{trans_num(1)}, trafos{trans_num(2)}, trafos{trans_num(3)}};
+        elseif s == 4
+            names = {'taux tunnel signal', trafos{trans_num(1)}, trafos{trans_num(2)}, trafos{trans_num(3)}, trafos{trans_num(4)}};
+        elseif s == 5
+            names = {'taux tunnel signal', trafos{trans_num(1)}, trafos{trans_num(2)}, trafos{trans_num(3)}, trafos{trans_num(4)}, trafos{trans_num(5)}};
+        end      
+        
+        %for i = 1:randi([2,5])
+        %    i
+        %    switch randi(5)
+        %        case 1
+        %            if not(ismember('taux tunnel signal', names))
+        %                names(end+1) = {'taux tunnel signal'};
+        %            end
+        %        case 2
+        %            if not(ismember('perte sensibilité', names))
+        %                names(end+1) = {'perte sensibilité'};
+        %            end
+        %        case 3
+        %            if not(ismember('effet Major', names))
+        %                names(end+1) = {'effet Major'};
+        %            end
+        %        case 4
+        %            if not(ismember('taux tunnel efface', names))
+        %                names(end+1) = {'taux tunnel efface'};
+        %            end
+        %        case 5
+        %            if not(ismember('taux tunnel mesure', names))
+        %                names(end+1) = {'taux tunnel mesure'};
+        %            end
+        %    end
+        %end         
         
         % Création de la cellule de paramètres
         parameters = cell(size(names));
@@ -137,6 +179,15 @@ for f = 1:length(files)
         % Modification du diagramme
         simulation = image_process(simulation, parameters);
         
+        thresh = 0.2;
+        for i = 1:size(simulation.occupation_signal,1)
+            for j = 1:size(simulation.occupation_signal,2)
+                if rand < thresh
+                    simulation.occupation_signal(i,j) = 1;
+                end
+            end
+        end
+            
         % Enregistrer les images et les fichiers .txt
         figure
         imagesc(flipud(simulation.occupation_signal))

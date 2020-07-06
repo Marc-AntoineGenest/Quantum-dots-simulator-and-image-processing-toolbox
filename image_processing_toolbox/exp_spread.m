@@ -19,7 +19,7 @@ ca = linspace(0, -1, size(occ,1));
 cb = linspace(0, -1, size(occ,2));
 ttmap = exp(coefy*ca + coefx*cb');
 ttmap = (ttmap - min(min(ttmap)))./(max(max(ttmap))-min(min(ttmap)));
-t_map = normrnd(ttmap*dmax, err*ttmap);
+t_map = normrnd(ttmap*dmax, err*ttmap)';
 
 % Déplacement des pixels
 occ_modif = zeros(size(occ));
@@ -29,6 +29,13 @@ for i = 1:size(occ, 1)
         d = round(t_map(i,j), 0);
         if occ(i,j) > 0 && j+d <= size(occ, 2) && j+d >= j
             occ_modif(i, j+d) = occ(i,j);
+        end
+    end
+end
+for i = 1:size(occ_v, 1)
+    for j = 1:size(occ_v, 2)
+        d = round(t_map(i,j), 0);
+        if occ_v(i,j) > 0 && j+d <= size(occ_v, 2) && j+d >= j
             occ_modif_v(i, j+d) = occ_v(i,j);
         end
     end

@@ -41,8 +41,8 @@ function simulation = image_process(simulation, parameters)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Mettre la liste de modifications en ordre logique
 order = {...
-    'anticroisement 2',...
     'anticroisement 1',...
+    'anticroisement 2',...
     'effet piège',...
     'effet capacitif',...
     'taux tunnel signal',...
@@ -53,7 +53,7 @@ order = {...
     };
 
 idx = [];
-for i = 1:size(parameters, 1)
+for i = 1:size(parameters, 2)
     idx = [idx, find(strcmp(order, parameters{i}(1)))];
 end
 [~, idx] = sort(idx);
@@ -63,7 +63,7 @@ simulation.parameters = parameters;
 
 
 %% Passer de l'occupation électronique à la détection de charge
-for i = 1:size(parameters, 1)
+for i = 1:size(parameters, 2)
     switch parameters{i}{1}
         case 'anticroisement 1'
             simulation.occupation_signal = add_avoided_crossing(simulation.occupation_signal,...
@@ -72,6 +72,7 @@ for i = 1:size(parameters, 1)
                 simulation.n2, simulation.V_sweep2, simulation.V_oxe, simulation.integrand_x,...
                 simulation.eps_0, simulation.x, simulation.dx, simulation.int_min,...
                 simulation.int_max, simulation.int_length, simulation.integral_tab);
+            simulation.occupation_signal(simulation.occupation_signal==2) = 1;
             
         case 'anticroisement 2'
             simulation.occupation_signal = ddot_avoided_crossing(simulation.occupation, parameters{i}{2});
@@ -80,19 +81,19 @@ for i = 1:size(parameters, 1)
             occ_modif = create_ellipse_noise(simulation.occupation_signal,...
                 parameters{i}{2}, parameters{i}{3}, parameters{i}{4},...
                 parameters{i}{5}, parameters{i}{6});
-            
-            simulation.occupation_trans(occ_modif-simulation.occupation_signal == -1) = 0;
+
+            simulation.occupation_trans(occ_modif(1:size(simulation.occupation_trans,1), 1:size(simulation.occupation_trans,2)) - simulation.occupation_signal(1:size(simulation.occupation_trans, 1), 1:size(simulation.occupation_trans, 2)) == -1) = 0;
             simulation.occupation_signal = occ_modif;
             
         case 'taux tunnel signal'
-            simulation.occupation_signal = exp_enlarge(simulation.occupation_signal,...
+            [simulation.occupation_signal, occ_trans_saver] = exp_enlarge(simulation.occupation_signal, simulation.occupation_trans,...
                 parameters{i}{2}, parameters{i}{3}, parameters{i}{4},...
                 parameters{i}{5}, parameters{i}{6});
             
-            occ_trans = nan(size(simulation.occupation_signal));
+            occ_trans = nan(size(simulation.occupation_trans));
             occ_trans(simulation.occupation_trans>=1) = simulation.occupation_trans(simulation.occupation_trans>=1);
             occ_trans = fillmissing(occ_trans, 'nearest');
-            occ_trans(simulation.occupation_signal==0) = 0;
+            occ_trans(occ_trans_saver==0) = 0;
             simulation.occupation_trans = round(occ_trans, 0);
             
         case 'taux tunnel mesure'
@@ -108,7 +109,7 @@ for i = 1:size(parameters, 1)
             
             occ_diff = occ_modif - simulation.occupation_signal;
             simulation.occupation_signal = occ_modif;
-            simulation.occupation_trans(occ_diff==-1) = 0;
+            simulation.occupation_trans(occ_diff(1:size(simulation.occupation_trans,1),1:size(simulation.occupation_trans,2))==-1) = 0;
             
         case 'effet piège'
             simulation.occupation_signal = full_translate(simulation.occupation_signal,...
@@ -133,10 +134,8 @@ for i = 1:size(parameters, 1)
             
         case 'effet Major'
             simulation.occupation_signal = erase_set_signal(simulation.occupation_signal,...
-                parameters{i}{2}, parameters{i}{3}, parameters{i}{4}, parameters{i}{5},...
-                parameters{i}{6}, parameters{i}{7}, parameters{i}{8});
+                parameters{i}{2}, parameters{i}{3}, parameters{i}{4}, parameters{i}{5}, parameters{i}{6}, parameters{i}{7}, parameters{i}{8});
             simulation.occupation_trans = erase_set_signal(simulation.occupation_trans,...
-                parameters{i}{2}, parameters{i}{3}, parameters{i}{4}, parameters{i}{5},...
-                parameters{i}{6}, parameters{i}{7}, parameters{i}{8});
+                parameters{i}{2}, parameters{i}{3}, parameters{i}{4}, parameters{i}{5}, parameters{i}{6}, parameters{i}{7}, parameters{i}{8});
     end
 end

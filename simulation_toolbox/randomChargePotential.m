@@ -7,8 +7,10 @@ nb_horizontal = L/dx + 1;
 nb_vertical = floor(h/dx) + 1;
 dy = h/nb_vertical;
 
+aire_oxyde
+
 % Calcul du nombre d'électrons dans l'oxyde
-nb_electrons = aire_oxyde * densite_charge;
+nb_electrons = floor(aire_oxyde * densite_charge);
 
 % Calcul de la carte d'électrons aléatoires dans l'oxyde
 idx_i = randi(nb_vertical, nb_electrons);
