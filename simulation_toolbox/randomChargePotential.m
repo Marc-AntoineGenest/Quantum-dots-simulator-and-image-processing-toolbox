@@ -3,8 +3,8 @@ function V_oxe = randomChargePotential(x, dx, h, densite_charge, sigma, k0)
 % Calcul des paramètre géométriques de l'oxyde
 L = x(end)-x(1);
 aire_oxyde = L*h;
-nb_horizontal = L/dx + 1;
-nb_vertical = floor(h/dx) + 1;
+nb_horizontal = round(L/dx) + 1;
+nb_vertical = round(h/dx) + 1;
 dy = h/nb_vertical;
 
 % Calcul du nombre d'électrons dans l'oxyde
