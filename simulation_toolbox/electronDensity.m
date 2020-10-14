@@ -43,7 +43,7 @@ n(isnan(n) | n<0.01) = 0;
 
 % Compter les iles et les électrons qu'il y a avec cette configuration
 [n_island, idx_island] = findIslands(n);
-nb_e = findNb_e(n, n_island, idx_island);
+nb_e = findNb_e(n, n_island, idx_island, dx);
 if isempty(idx_island)
     idx_island = 0;
 end
@@ -74,7 +74,7 @@ while (bool_idx && ~isequal(nb_e, nb_e_old)) && it < 10
     
     % Compter les iles et les électrons qu'il y a avec cette configuration
     [n_island, idx_island] = findIslands(n);
-    nb_e = findNb_e(n, n_island, idx_island);
+    nb_e = findNb_e(n, n_island, idx_island, dx);
     if isempty(idx_island)
         idx_island = 0;
     end

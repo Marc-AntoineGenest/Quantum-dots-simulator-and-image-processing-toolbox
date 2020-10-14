@@ -1,4 +1,4 @@
-function nb_e = findNb_e(n, n_island, idx_island)
+function nb_e = findNb_e(n, n_island, idx_island, dx)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INPUTS:
 % n : Profil de densité électronique
@@ -21,6 +21,6 @@ end
 
 %% Calcul du nombre d'électrons par île ( integrale(densité(x)) )
 for i = 1:n_island
-    nb_e(i) = floor(sum(n(idx_island(i,1):idx_island(i,2))));
+    nb_e(i) = floor(dx*1e9*sum(n(idx_island(i,1):idx_island(i,2))));
 end
 
